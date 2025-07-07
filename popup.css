@@ -1,0 +1,15 @@
+body {
+  font-family: sans-serif;
+  width: 300px;
+  padding: 10px;
+}
+h3 {
+  margin-top: 0;
+}
+.event {
+  margin-bottom: 8px;
+  padding: 6px;
+  border-left: 4px solid #4285f4;
+  background-color: #f1f3f4;
+  border-radius: 4px;
+}
