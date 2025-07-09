@@ -1,2 +1,7 @@
 .env
-client_secret.json
+frontend/.env
+backend/.env
+extension/.env
+extension/client_secret.json
+node_modules
+
