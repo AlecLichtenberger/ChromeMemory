@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Google Calendar Widget</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <h3>Upcoming Events</h3>
-    <div id="events">Loading...</div>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 10px; width: 250px; }
+    .event { margin-bottom: 10px; }
+    button { margin-bottom: 10px; width: 100%; padding: 5px; }
+  </style>
+</head>
+<body>
+  <button id="load-events">Load Calendar Events</button>
+  <div id="events">Waiting...</div>
 
-    <script src="popup.js" defer></script>
-  </body>
+  <!-- ✅ DO NOT USE defer, DO use this placement -->
+  <script src="popup.js"></script>
+</body>
 </html>

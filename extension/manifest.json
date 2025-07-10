@@ -8,14 +8,16 @@
     "storage"
   ],
   "host_permissions": [
-    "https://www.googleapis.com/*"
+    "https://www.googleapis.com/*",
+    "https://accounts.google.com/*"
   ],
   "oauth2": {
     "client_id": "855227679517-8r09mnf51gssuugosgc97omriu8m3bl3.apps.googleusercontent.com",
     "scopes": ["https://www.googleapis.com/auth/calendar.readonly"]
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html",
