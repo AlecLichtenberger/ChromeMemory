@@ -4,4 +4,5 @@ backend/.env
 extension/.env
 extension/client_secret.json
 node_modules
+backend/config/serviceAccountKey.json
 

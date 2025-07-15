@@ -17,6 +17,7 @@ const AuthForm = () => {
 
   const handleEmailAuth = async (e) => {
     e.preventDefault();
+
     try {
       const userCredential = isSignup
         ? await createUserWithEmailAndPassword(auth, email, password)
@@ -24,12 +25,15 @@ const AuthForm = () => {
 
       const token = await userCredential.user.getIdToken();
       localStorage.setItem("token", token);
-      await fetch("http://localhost:5000/api/auth/firebase-login", {
+
+
+
+      await fetch("http://localhost:5000/api/auth/email-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
+        }
       });
       
       alert("Success!");
@@ -38,7 +42,8 @@ const AuthForm = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (e) => {
+    e.preventDefault();
     try {
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
