@@ -42,13 +42,18 @@ function authenticateAndFetchEvents() {
 function fetchEventList(accessToken) {
   console.log("Fetching calendar events with token:", accessToken);
 
-  fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events?maxResults=5&orderBy=startTime&singleEvents=true", {
+  fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events?maxResults=10&orderBy=startTime&singleEvents=true", {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   })
     .then(res => res.json())
     .then(data => {
+      if (!data || !Array.isArray(data.items)) {
+        console.error("Unexpected response from Google Calendar API:", JSON.stringify(data, null, 2));
+        return;
+      }
+
       console.log("Fetched events:", data.items);
       chrome.storage.local.set({ calendarEvents: data.items }, () => {
         console.log("Events saved to local storage.");
@@ -57,19 +62,10 @@ function fetchEventList(accessToken) {
     .catch(err => console.error("Error fetching events:", err));
 }
 
-// 🔁 Listen for requests from the popup
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  console.log("Received message:", msg);
-
+// 🔁 Always re-authenticate when fetch_events is received
+chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === "fetch_events") {
-    chrome.storage.local.get("accessToken", ({ accessToken }) => {
-      if (accessToken) {
-        console.log("Token found, fetching events...");
-        fetchEventList(accessToken);
-      } else {
-        console.log("No token found, starting OAuth flow...");
-        authenticateAndFetchEvents();
-      }
-    });
+    console.log("Forcing re-authentication...");
+    authenticateAndFetchEvents(); // <--- always starts new OAuth flow
   }
 });

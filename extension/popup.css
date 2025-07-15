@@ -13,3 +13,9 @@ h3 {
   background-color: #f1f3f4;
   border-radius: 4px;
 }
+
+.ExtensionTitle {
+  font-family:'Segoe UI';
+  width: 300px;
+  font-size: 20px;
+}
