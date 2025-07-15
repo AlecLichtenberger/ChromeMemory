@@ -39,44 +39,14 @@ function loadEventsToPopup() {
       return;
     }
 
-    const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const startOfTomorrow = startOfToday + 24 * 60 * 60 * 1000;
-
-    const todayEvents = [];
-    const otherEvents = [];
-
     calendarEvents.forEach(event => {
-      const startStr = event.start?.dateTime || event.start?.date;
-      if (!startStr) return;
+      const div = document.createElement("div");
+      div.className = "event";
 
-      const eventTime = new Date(startStr).getTime();
-      if (eventTime >= startOfToday && eventTime < startOfTomorrow) {
-        todayEvents.push(event);
-      } else {
-        otherEvents.push(event);
-      }
+      const start = event.start.dateTime || event.start.date || "Unknown time";
+      div.textContent = `${event.summary || "(No Title)"}\n${new Date(start).toLocaleString()}`;
+      container.appendChild(div);
     });
-
-    const renderEventList = (title, list) => {
-      if (list.length === 0) return;
-
-      const sectionHeader = document.createElement("h3");
-      sectionHeader.textContent = title;
-      container.appendChild(sectionHeader);
-
-      list.forEach(event => {
-        const div = document.createElement("div");
-        div.className = "event";
-        const start = event.start.dateTime || event.start.date || "Unknown time";
-        div.textContent = `${event.summary || "(No Title)"}\n${new Date(start).toLocaleString()}`;
-        container.appendChild(div);
-      });
-    };
-
-    // Show today's events first
-    renderEventList("Today's Events", todayEvents);
-    renderEventList("Upcoming Events", otherEvents);
   });
 }
 

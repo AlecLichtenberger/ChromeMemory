@@ -40,9 +40,20 @@ function authenticateAndFetchEvents() {
 }
 
 function fetchEventList(accessToken) {
-  console.log("Fetching calendar events with token:", accessToken);
+  const now = new Date();
+  const timeMin = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+  const timeMax = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
 
-  fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events?maxResults=10&orderBy=startTime&singleEvents=true", {
+  const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events` +
+              `?maxResults=25` +
+              `&orderBy=startTime` +
+              `&singleEvents=true` +
+              `&timeMin=${encodeURIComponent(timeMin)}` +
+              `&timeMax=${encodeURIComponent(timeMax)}`;
+
+  console.log("Fetching calendar events from:", url);
+
+  fetch(url, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
@@ -56,11 +67,12 @@ function fetchEventList(accessToken) {
 
       console.log("Fetched events:", data.items);
       chrome.storage.local.set({ calendarEvents: data.items }, () => {
-        console.log("Events saved to local storage.");
+        console.log("Events stored to local storage.");
       });
     })
     .catch(err => console.error("Error fetching events:", err));
 }
+
 
 // 🔁 Always re-authenticate when fetch_events is received
 chrome.runtime.onMessage.addListener((msg) => {
