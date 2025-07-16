@@ -1,14 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const dateElement = document.getElementById("current-date");
-  const now = new Date();
-  dateElement.textContent = now.toLocaleDateString(undefined, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-
   const button = document.getElementById("load-events");
   const container = document.getElementById("events");
 
@@ -21,11 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
     container.textContent = "Loading events...";
     chrome.runtime.sendMessage({ type: "fetch_events" });
 
-    // Try loading after a short delay
+    // Load events after a short delay
     setTimeout(loadEventsToPopup, 1500);
   });
 
-  // Optional: auto-load if events are cached
+  // Optional: auto-load cached events on open
   loadEventsToPopup();
 });
 
@@ -40,13 +30,24 @@ function loadEventsToPopup() {
     }
 
     calendarEvents.forEach(event => {
-      const div = document.createElement("div");
-      div.className = "event";
+      const card = document.createElement("div");
+      card.className = "event-card";
+
+      const title = document.createElement("div");
+      title.className = "event-title";
+      title.textContent = event.summary || "(No Title)";
 
       const start = event.start.dateTime || event.start.date || "Unknown time";
-      div.textContent = `${event.summary || "(No Title)"}\n${new Date(start).toLocaleString()}`;
-      container.appendChild(div);
+      const time = document.createElement("div");
+      time.className = "event-time";
+      time.textContent = new Date(start).toLocaleString();
+
+      card.appendChild(title);
+      card.appendChild(time);
+      container.appendChild(card);
     });
   });
 }
+
+
 
