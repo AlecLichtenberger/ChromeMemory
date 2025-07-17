@@ -42,6 +42,7 @@ function loadEventsToPopup() {
       time.className = "event-time";
       time.textContent = new Date(start).toLocaleString();
 
+      
       card.appendChild(title);
       card.appendChild(time);
       container.appendChild(card);

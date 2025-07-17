@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="toggle.css">
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>ChromeMemory</h1>
+  <div id="ChromeMemoryTitle">ChroMemory</div>
+  <label class="switch">
+  <input type="checkbox">
+  <span class="slider round"></span>
+  </label>
+  
   <div id="current-date"></div>
   <button id="load-events">Load Calendar Events</button>
   <div id="events">Waiting...</div>
