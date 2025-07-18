@@ -15,12 +15,28 @@ h1 {
   color: #FE7743;
   font-size: 30px;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  margin-bottom: 10px;
+}
+
+#date-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* spacing between elements */
+  margin-bottom: 10px;
 }
 
 #current-date {
   font-weight: bold;
-  margin-bottom: 10px;
   color: #FE7743;
+  font-family: 'Work Sans', sans-serif;
+  font-size: 20px;
+  min-width: 100px;
+  text-align: center;
 }
 
 #events{
@@ -29,6 +45,7 @@ h1 {
 }
 
 #load-events {
+  margin-top:10px;
   width: 100%;
   padding: 8px;
   background-color: #273469;

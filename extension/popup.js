@@ -1,23 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
   const button = document.getElementById("load-events");
   const container = document.getElementById("events");
+  const dateElement = document.getElementById("current-date");
 
-  if (!button || !container) {
+  if (!button || !container || !dateElement) {
     console.error("Missing DOM elements");
     return;
   }
+
+  const currentDate = new Date();
+  const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(currentDate.getDate()).padStart(2, '0');
+  const yyyy = currentDate.getFullYear();
+  dateElement.textContent = `${mm}/${dd}/${yyyy}`;
 
   button.addEventListener("click", () => {
     container.textContent = "Loading events...";
     chrome.runtime.sendMessage({ type: "fetch_events" });
 
-    // Load events after a short delay
     setTimeout(loadEventsToPopup, 1500);
   });
 
-  // Optional: auto-load cached events on open
   loadEventsToPopup();
 });
+
 
 function loadEventsToPopup() {
   chrome.storage.local.get("calendarEvents", ({ calendarEvents }) => {
