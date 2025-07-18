@@ -81,3 +81,53 @@ chrome.runtime.onMessage.addListener((msg) => {
     authenticateAndFetchEvents(); // <--- always starts new OAuth flow
   }
 });
+
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type === "fetch_events_for_date" && msg.date) {
+    const date = new Date(msg.date);
+    const timeMin = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+    const timeMax = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString();
+
+    chrome.storage.local.get("accessToken", ({ accessToken }) => {
+      if (!accessToken) {
+        console.log("No access token, re-authenticating...");
+        authenticateAndFetchEvents();
+        return;
+      }
+
+      const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events` +
+                  `?maxResults=25` +
+                  `&orderBy=startTime` +
+                  `&singleEvents=true` +
+                  `&timeMin=${encodeURIComponent(timeMin)}` +
+                  `&timeMax=${encodeURIComponent(timeMax)}`;
+
+      fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      })
+        .then(res => {
+          if (res.status === 401) {
+            console.warn("Token expired or invalid. Re-authenticating...");
+            authenticateAndFetchEvents(); // Try again with new token
+            return Promise.reject("Invalid token");
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (!data || !Array.isArray(data.items)) {
+            console.error("Bad calendar response:", JSON.stringify(data, null, 2));
+            return;
+          }
+
+          chrome.storage.local.set({ calendarEvents: data.items }, () => {
+            console.log("Events for selected date stored.");
+          });
+        })
+        .catch(err => {
+          if (err !== "Invalid token") {
+            console.error("Calendar fetch failed:", err);
+          }
+        });
+    });
+  }
+});
