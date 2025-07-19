@@ -1,5 +1,5 @@
 import express from "express";
-import { firebaseLogin, emailLogin } from "../controllers/authcontroller.js";
+import { firebaseLogin, emailLogin, storeCalToken } from "../controllers/authcontroller.js";
 
 
 const router = express.Router();
@@ -8,9 +8,10 @@ const router = express.Router();
 // call the firebaseLogin function
 router.post("/firebase-login", firebaseLogin);
 
-//call the storeCalendarToken function
+//call the emailLogin function
 router.post("/email-login", emailLogin);
 
+router.post("/store-calendar-token", storeCalToken);
 // You can add more auth-related routes here
 
 export default router;

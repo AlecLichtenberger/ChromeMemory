@@ -1,12 +1,14 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./components/home.js"; // example
 import AuthForm from "./components/AuthForm"; // adjust path as needed
 
 function App() {
   return (
-    <div className="App">
-      <h1>Welcome to My Calendar App</h1>
-      <AuthForm />
-    </div>
+    <Routes>
+      <Route path="/" element={<AuthForm />} />
+      <Route path="/home" element={<Home />} />
+    </Routes>
   );
 }
 

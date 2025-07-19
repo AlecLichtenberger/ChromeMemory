@@ -1,5 +1,5 @@
 import React from "react";
-import "./CalendarModal.css"; // optional if you want to separate styles
+// import "./CalendarModal.css"; // optional if you want to separate styles
 
 const CalendarModal = ({ isOpen, onClose, onConnect }) => {
   if (!isOpen) return null;

@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import admin from "../firebaseAdmin.js";
 
 export const firebaseLogin = async (req, res) => {
+  console.log("Firebase login request received");
   const token = req.headers.authorization?.split("Bearer ")[1];
   const { googleAccessToken } = req.body;
 
@@ -49,6 +50,7 @@ export const firebaseLogin = async (req, res) => {
 };
 // POST /api/auth/store-calendar-token (for email/password users)
 export const emailLogin = async (req, res) => {
+  console.log("Email login request received");
   const token = req.headers.authorization?.split("Bearer ")[1];
 
   if (!token) {
@@ -60,9 +62,15 @@ export const emailLogin = async (req, res) => {
     const { uid } = decoded;
 
     let user = await User.findOne({ uid });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user){
+      console.log("User not found");
+      user = new User({ uid, email: decoded.email });
+      // await user.save();
+      // return res.status(404).json({ message: "User not found" });
+    }
 
     await user.save();
+    console.log("User found:", user);
 
     res.status(200).json({ message: "Calendar token stored successfully" }, user);
   } catch (err) {
@@ -70,3 +78,10 @@ export const emailLogin = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const storeCalToken = async (req, res) => {
+  console.log("Store calendar token request received");
+  const token = req.headers.authorization?.split("Bearer ")[1];
+  const { googleAccessToken } = req.body;
+
+
+}

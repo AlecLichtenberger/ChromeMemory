@@ -1,5 +1,7 @@
 // src/components/AuthForm.js
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   auth,
   provider,
@@ -14,7 +16,7 @@ const AuthForm = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
   const handleEmailAuth = async (e) => {
     e.preventDefault();
 
@@ -33,10 +35,13 @@ const AuthForm = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        }
+        },
+        body: JSON.stringify({  }),
       });
       
       alert("Success!");
+      navigate("/home");
+
     } catch (err) {
       alert(err.message);
     }
@@ -54,8 +59,12 @@ const AuthForm = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({}),
       });
       alert("Google Sign-in success!");
+      
+      navigate("/home", { state: { CalendarConnected: true } });
+
     } catch (err) {
       alert(err.message);
     }
