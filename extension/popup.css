@@ -23,9 +23,9 @@ h1 {
 }
 
 #load-prev-day{
-  
-  width: 10%;
-  padding: 8px;
+  font-family: 'Work Sans', sans-serif;
+  width: 5%;
+  padding: 2px;
   background-color: #273469;
   color: white;
   border: none;
@@ -35,9 +35,9 @@ h1 {
 }
 
 #load-next-day{
-  
-  width: 10%;
-  padding: 8px;
+  font-family: 'Work Sans', sans-serif;
+  width: 5%;
+  padding: 2px;
   background-color: #273469;
   color: white;
   border: none;
