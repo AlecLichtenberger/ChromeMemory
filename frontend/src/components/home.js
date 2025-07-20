@@ -1,10 +1,15 @@
 import React, { useState } from "react";
-import CalendarModal from "../components/CalendarModal";
+import CalendarModal from "./CalConnectModal";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 
 const Home = () => {
-  const [showModal, setShowModal] = useState(true); // Show on first login
+  
+  const location = useLocation();
+  const calendarConnected = location.state?.calendarConnected ?? false;
+  const [showModal, setShowModal] = useState(!calendarConnected);
+
 
   const handleConnect = async () => {
     const provider = new GoogleAuthProvider();
@@ -38,7 +43,7 @@ const Home = () => {
       <h1>Welcome to Your Dashboard</h1>
       <CalendarModal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        // onClose={() => setShowModal(false)}
         onConnect={handleConnect}
       />
     </div>
