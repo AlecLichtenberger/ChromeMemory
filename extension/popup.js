@@ -66,12 +66,24 @@ function loadEventsToPopup() {
       title.className = "event-title";
       title.textContent = event.summary || "(No Title)";
 
-      const start = event.start.dateTime || event.start.date || "Unknown time";
+      // Extract start and end
+      const startRaw = event.start.dateTime || event.start.date;
+      const endRaw = event.end.dateTime || event.end.date;
+
+      const startDate = new Date(startRaw);
+      const endDate = new Date(endRaw);
+
       const time = document.createElement("div");
       time.className = "event-time";
-      time.textContent = new Date(start).toLocaleString();
+      const startText = document.createElement("div");
+      startText.textContent = `Start Date: ${startDate.toLocaleString()}`;
+
+      const endText = document.createElement("div");
+      endText.textContent = `End Date: ${endDate.toLocaleString()}`;
 
       card.appendChild(title);
+      card.appendChild(startText);
+      card.appendChild(endText);
       card.appendChild(time);
       container.appendChild(card);
     });
