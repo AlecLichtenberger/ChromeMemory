@@ -8,6 +8,7 @@ import {
   signInWithPopup
 } from "../firebase";
 import {
+  GoogleAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
@@ -30,7 +31,7 @@ const AuthForm = () => {
 
 
 
-      await fetch("http://localhost:5000/api/auth/email-login", {
+      const response = await fetch("http://localhost:5000/api/auth/email-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,8 +39,13 @@ const AuthForm = () => {
         },
         body: JSON.stringify({  }),
       });
-      
+      const data = await response.json();
       alert("Success!");
+      if (response.status === 200 && data.CalAccess === true) {
+        localStorage.setItem("hasCalendarAccess", "true");
+      } else {
+        localStorage.setItem("hasCalendarAccess", "false");
+      }
       navigate("/home");
 
     } catch (err) {
@@ -49,21 +55,33 @@ const AuthForm = () => {
 
   const handleGoogleLogin = async (e) => {
     e.preventDefault();
+    const provider = new GoogleAuthProvider();
+
+  // ✅ Add the Google Calendar scope
+    provider.addScope("https://www.googleapis.com/auth/calendar.readonly");
     try {
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const googleAccessToken = credential.accessToken;
       localStorage.setItem("token", token);
-      await fetch("http://localhost:5000/api/auth/firebase-login", {
+      const response = await fetch("http://localhost:5000/api/auth/firebase-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({googleAccessToken}),
       });
+      const data = await response.json();
       alert("Google Sign-in success!");
-      
-      navigate("/home", { state: { CalendarConnected: true } });
+      if (response.status === 200 && data.CalAccess === true) {
+        localStorage.setItem("hasCalendarAccess", "true");
+        console.log(localStorage["hasCalendarAccess"]);
+      } else {
+        localStorage.setItem("hasCalendarAccess", "false");
+      }
+      navigate("/home");
 
     } catch (err) {
       alert(err.message);
