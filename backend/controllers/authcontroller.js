@@ -5,7 +5,7 @@ export const firebaseLogin = async (req, res) => {
   console.log("Firebase login request received");
   const token = req.headers.authorization?.split("Bearer ")[1];
   const { googleAccessToken } = req.body;
-
+  console.log("Google Access Token:", googleAccessToken);
   if (!token) return res.status(401).json({ message: "No auth token provided" });
 
   try {
@@ -33,7 +33,11 @@ export const firebaseLogin = async (req, res) => {
     }
 
     await user.save();
-    res.status(200).json({ message: "Login successful", user });
+    var hasCalendarAccess = false;
+    if (user.calendarAccessToken) {
+      hasCalendarAccess = true;
+    }
+    res.status(200).json({ message: "logged in successfully",CalAccess: hasCalendarAccess,});
 
   }
   catch (error) {
@@ -70,9 +74,13 @@ export const emailLogin = async (req, res) => {
     }
 
     await user.save();
-    console.log("User found:", user);
-
-    res.status(200).json({ message: "Calendar token stored successfully" }, user);
+    // console.log("User found:", user);
+    var hasCalendarAccess = false;
+    if (user.calendarAccessToken) {
+      hasCalendarAccess = true;
+    }
+    console.log(hasCalendarAccess);
+    res.status(200).json({ message: "logged in successfully", CalAccess: hasCalendarAccess,});
   } catch (err) {
     console.error("Token storage error:", err);
     res.status(500).json({ message: "Internal server error" });
@@ -81,7 +89,32 @@ export const emailLogin = async (req, res) => {
 export const storeCalToken = async (req, res) => {
   console.log("Store calendar token request received");
   const token = req.headers.authorization?.split("Bearer ")[1];
-  const { googleAccessToken } = req.body;
+  
+  if (!token) {
+    return res.status(401).json({ message: "Missing ID token" });
+  }
 
+  try {
+    // ✅ Verify the Firebase ID token
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;
+    const email = decodedToken.email;
+
+    const googleAccessToken = req.body.googleAccessToken;
+    console.log("Access Token received:", req.body.googleAccessToken);
+    const result = await User.updateOne(
+      { uid },
+      { $set: { calendarAccessToken: googleAccessToken } },
+      { upsert: true }
+    );
+
+    console.log("MongoDB update result:", result);
+
+    res.status(200).json({ message: "Token stored successfully"});
+  } catch (error) {
+    console.log("Error storing calendar token:", error);
+    console.error("Error storing calendar token:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
 
 }
