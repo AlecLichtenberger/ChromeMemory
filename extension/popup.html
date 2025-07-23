@@ -10,19 +10,24 @@
   <div id="ChromeMemoryTitle">ChroMemory</div>
   
   <div id="date-controls">
-  <button id="load-prev-day">&lt;</button>
-  <div id="current-date"></div>
-  <button id="load-next-day">&gt;</button>
+    <button id="load-prev-day">&lt;</button>
+    <div id="current-date"></div>
+    <button id="load-next-day">&gt;</button>
   </div>
 
 
-  <label class="switch">
-  <input type="checkbox">
-  <span class="slider round"></span>
-  </label>
+  
 
   <button id="load-events">Load Calendar Events</button>
   <div id="events">Waiting...</div>
+
+  <div id = "ModeControl">
+    <div id = "ChromeMemoryContent">Dark/Light Mode</div>
+    <label class="switch">
+    <input type="checkbox" id = "theme-toggle">
+    <span class="slider round"></span>
+    </label>
+  </div>
 
   <script src="popup.js"></script>
 </body>

@@ -6,6 +6,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextBtn = document.getElementById("load-next-day");
   const dateElement = document.getElementById("current-date");
   const container = document.getElementById("events");
+  const toggleSwitch = document.getElementById("theme-toggle");
+
+  chrome.storage.local.get("theme", ({theme}) => {
+    if("theme" == "light-mode"){
+      document.body.classList.add("light-mode");
+      toggleSwitch.checked = true;
+    }
+    else{
+      document.body.classList.add("dark-mode");
+      toggleSwitch.checked = false;
+    }
+  });
+
+  toggleSwitch.addEventListener("change", () => {
+    const theme = toggleSwitch.checked ? "light-mode" : "dark-mode";
+    document.body.classList.remove("light-mode", "dark-mode");
+    document.body.classList.add(theme);
+
+    chrome.storage.local.set({ theme });
+  });
+
 
   if (!button || !container || !dateElement || !prevBtn || !nextBtn) {
     console.error("Missing DOM elements");

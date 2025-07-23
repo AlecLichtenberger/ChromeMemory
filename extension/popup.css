@@ -10,6 +10,19 @@ h1 {
   margin-bottom: 10px;
 }
 
+#ChromeMemoryContent{
+  font-family: 'Work Sans', sans-serif;
+  color: #FE7743;
+  font-size: 13px;
+}
+
+#ModeControl{
+  display: flex;
+  
+  gap: 10px; /* spacing between elements */
+  margin-bottom: 10px;
+}
+
 #ChromeMemoryTitle{
   font-family: 'Work Sans', sans-serif;
   color: #FE7743;
@@ -112,3 +125,18 @@ h1 {
   font-family: 'Work Sans', sans-serif;
 }
 
+/* dark mode */
+
+body.light-mode{
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+body.light-mode #ChromeMemoryContent,
+body.light-mode #ChromeMemoryTitle, 
+body.light-mode #date-controls,
+body.light-mode #current-date,
+body.light-mode #ModeControl{
+  color:#273F4F;
+
+}
