@@ -1,22 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import CalendarModal from "./CalConnectModal";
+import CalendarWidget from "./calendar";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 
 const Home = () => {
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(true);
 
-  useEffect(() => {
-    const hasCalendarAccess = localStorage.getItem("hasCalendarAccess") === "true";
-    console.log("Has Calendar Access:", hasCalendarAccess);
-    setShowModal(!hasCalendarAccess);
-  }, []);
+  // useEffect(() => {
+  //   const hasCalendarAccess = localStorage.getItem("hasCalendarAccess") === "true";
+  //   console.log("Has Calendar Access:", hasCalendarAccess);
+  //   setShowModal(!hasCalendarAccess);
+  // }, []);
 
   const [isConnecting, setIsConnecting] = useState(false);
+  const handleConnect = () => {
+    const userId = auth.currentUser.uid;
 
-  const handleConnect = async () => {
+    const popup = window.open(
+      `http://localhost:5000/api/auth/calendar-consent?userId=${userId}`,
+      '_blank',
+      'width=500,height=600'
+    );
+
+    const timer = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(timer);
+        // Optionally trigger an event or refetch events
+        console.log("Popup closed, maybe refresh calendar data now.");
+        setIsConnecting(true);
+
+      }
+    }, 500);
+    console.log(setIsConnecting);
+  };
+
+  const handleConnectCalendar = async () => {
     if (isConnecting) return; // Prevent multiple clicks
     setIsConnecting(true);
     const provider = new GoogleAuthProvider();
@@ -57,13 +78,20 @@ const Home = () => {
   };
 
   return (
-    <div>
+    
+    <div className>
       <h1>Welcome to Your Dashboard</h1>
       <CalendarModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onConnect={handleConnect}
       />
+      <div className="w-full overflow-x-auto mt-4 px-4">
+        <CalendarWidget 
+          hasCalendarAccess={localStorage.getItem("hasCalendarAccess") === "true"}
+          calConnected={isConnecting}
+        />
+      </div>
     </div>
   );
 };

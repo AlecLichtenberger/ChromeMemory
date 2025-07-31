@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
   calendarAccessToken: {
     type: String,
   },
+  calendarRefreshToken: {
+    type: String,
+  },
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);

@@ -18,6 +18,9 @@ const AuthForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+
+  
   const handleEmailAuth = async (e) => {
     e.preventDefault();
 
@@ -89,7 +92,9 @@ const AuthForm = () => {
   };
 
   return (
+
     <div style={styles.container}>
+
       <h2>{isSignup ? "Sign Up" : "Login"}</h2>
       <form onSubmit={handleEmailAuth} style={styles.form}>
         <input
