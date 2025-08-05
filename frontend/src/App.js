@@ -4,8 +4,11 @@ import Home from "./components/home.js"; // example
 import AuthForm from "./components/AuthForm"; // adjust path as needed
 import Calendar from "./components/calendar"; // example
 
+
 function App() {
+  
   return (
+    
     <Routes>
       <Route path="/" element={<AuthForm />} />
       <Route path="/home" element={<Home />} />

@@ -1,6 +1,7 @@
 import React, {use, useEffect, useState} from "react";
+import BackendButton from "./BackendButton";
 
-const CalendarWidget = (hasCalendarAccess,calConnected) => {
+const CalendarWidget = ({ hasCalendarAccess, calConnected }) => {
   const [eventsData, setEvents] = useState([]);
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -50,7 +51,9 @@ const CalendarWidget = (hasCalendarAccess,calConnected) => {
   }
   return (
     <div className="calendar">
-      <button onClick={fetchEvents}>Load Events</button>
+      
+      <BackendButton onClick={fetchEvents}>Load Events</BackendButton>
+      
       <div className="calendar-container" style ={styles.calendarContainer}>
         
         {days.map((day, index) => (
@@ -92,7 +95,7 @@ const CalendarWidget = (hasCalendarAccess,calConnected) => {
                     ))}
                   </ul>
                 ) : (
-                  <p style={{ fontSize: "0.9em", color: "#888" }}>No events</p>
+                  <p style={{ fontSize: "0.9em", color: "#FE7743", }}>No events</p>
                 );
               })()}
 
@@ -114,6 +117,7 @@ const styles = {
   dayColumn: {
     flex: 1,
     borderLeft: "1px solid #ddd",
+    
     display: "flex",
     flexDirection: "column",
     padding: "10px",
@@ -135,6 +139,9 @@ const styles = {
     borderRadius: "4px",
     fontSize: "0.9em",
   },
+  
+  
+  
 };
 
 export default CalendarWidget;

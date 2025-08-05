@@ -275,7 +275,7 @@ export const calConScreen = async (req, res) => {
     prompt: 'consent',
     state: userId,
   });
-  console.log("TEST1");
+  console.log(url);
   res.redirect(url);
   console.log("TEST2");
 

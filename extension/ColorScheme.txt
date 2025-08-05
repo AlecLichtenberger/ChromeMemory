@@ -1,0 +1,6 @@
+Basic Text Color = "#FE7743"
+Background = "#11151c"
+Button/Div Color = #273469
+Event Text Color = #e0e0e0;
+Event Date Color = White
+Load Calendar Event COlor = White

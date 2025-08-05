@@ -5,6 +5,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 
+
 const Home = () => {
 
   const [showModal, setShowModal] = useState(true);
@@ -18,7 +19,8 @@ const Home = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const handleConnect = () => {
     const userId = auth.currentUser.uid;
-
+    
+    
     const popup = window.open(
       `http://localhost:5000/api/auth/calendar-consent?userId=${userId}`,
       '_blank',
@@ -79,8 +81,8 @@ const Home = () => {
 
   return (
     
-    <div className>
-      <h1>Welcome to Your Dashboard</h1>
+    <div>
+      <h1 style = {styles.headerText}>Welcome to Your Dashboard</h1>
       <CalendarModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -95,5 +97,12 @@ const Home = () => {
     </div>
   );
 };
+
+const styles = {
+  headerText: {
+    color: "#FE7743",
+    fontFamily: "'Work Sans', Sans-serif",
+  }
+}
 
 export default Home;

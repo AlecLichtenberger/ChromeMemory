@@ -1,4 +1,4 @@
-function authenticateAndFetchEvents() {
+function authenticateAndFetchEvents(callback) {
   const CLIENT_ID = chrome.runtime.getManifest().oauth2.client_id;
   const redirectUri = chrome.identity.getRedirectURL();
 
@@ -33,16 +33,15 @@ function authenticateAndFetchEvents() {
 
       chrome.storage.local.set({ accessToken }, () => {
         console.log("Access token stored.");
-        fetchEventList(accessToken);
+        if (typeof callback === "function") callback(accessToken);
       });
     }
   );
 }
 
-function fetchEventList(accessToken) {
-  const now = new Date();
-  const timeMin = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-  const timeMax = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
+function fetchEventList(accessToken, date = new Date()) {
+  const timeMin = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+  const timeMax = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString();
 
   const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events` +
               `?maxResults=25` +
@@ -58,7 +57,14 @@ function fetchEventList(accessToken) {
       Authorization: `Bearer ${accessToken}`
     }
   })
-    .then(res => res.json())
+    .then(res => {
+      if (res.status === 401) {
+        console.warn("Token expired or invalid. Re-authenticating...");
+        authenticateAndFetchEvents((newToken) => fetchEventList(newToken, date));
+        throw new Error("Invalid token");
+      }
+      return res.json();
+    })
     .then(data => {
       if (!data || !Array.isArray(data.items)) {
         console.error("Unexpected response from Google Calendar API:", JSON.stringify(data, null, 2));
@@ -70,64 +76,34 @@ function fetchEventList(accessToken) {
         console.log("Events stored to local storage.");
       });
     })
-    .catch(err => console.error("Error fetching events:", err));
+    .catch(err => {
+      if (err.message !== "Invalid token") {
+        console.error("Error fetching events:", err);
+      }
+    });
 }
 
-
-// 🔁 Always re-authenticate when fetch_events is received
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === "fetch_events") {
-    console.log("Forcing re-authentication...");
-    authenticateAndFetchEvents(); // <--- always starts new OAuth flow
-  }
-});
-
-chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.type === "fetch_events_for_date" && msg.date) {
-    const date = new Date(msg.date);
-    const timeMin = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
-    const timeMax = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString();
-
     chrome.storage.local.get("accessToken", ({ accessToken }) => {
       if (!accessToken) {
-        console.log("No access token, re-authenticating...");
-        authenticateAndFetchEvents();
-        return;
+        console.log("No access token found, initiating auth flow...");
+        authenticateAndFetchEvents(fetchEventList);
+      } else {
+        fetchEventList(accessToken);
       }
+    });
+  }
 
-      const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events` +
-                  `?maxResults=25` +
-                  `&orderBy=startTime` +
-                  `&singleEvents=true` +
-                  `&timeMin=${encodeURIComponent(timeMin)}` +
-                  `&timeMax=${encodeURIComponent(timeMax)}`;
-
-      fetch(url, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      })
-        .then(res => {
-          if (res.status === 401) {
-            console.warn("Token expired or invalid. Re-authenticating...");
-            authenticateAndFetchEvents(); // Try again with new token
-            return Promise.reject("Invalid token");
-          }
-          return res.json();
-        })
-        .then(data => {
-          if (!data || !Array.isArray(data.items)) {
-            console.error("Bad calendar response:", JSON.stringify(data, null, 2));
-            return;
-          }
-
-          chrome.storage.local.set({ calendarEvents: data.items }, () => {
-            console.log("Events for selected date stored.");
-          });
-        })
-        .catch(err => {
-          if (err !== "Invalid token") {
-            console.error("Calendar fetch failed:", err);
-          }
-        });
+  if (msg.type === "fetch_events_for_date" && msg.date) {
+    const date = new Date(msg.date);
+    chrome.storage.local.get("accessToken", ({ accessToken }) => {
+      if (!accessToken) {
+        console.log("No access token found, initiating auth flow...");
+        authenticateAndFetchEvents((newToken) => fetchEventList(newToken, date));
+      } else {
+        fetchEventList(accessToken, date);
+      }
     });
   }
 });
