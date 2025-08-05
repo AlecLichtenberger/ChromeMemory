@@ -1,5 +1,6 @@
 import React, {use, useEffect, useState} from "react";
 import BackendButton from "./BackendButton";
+import './calendar.css';
 
 const CalendarWidget = ({ hasCalendarAccess, calConnected }) => {
   const [eventsData, setEvents] = useState([]);
@@ -58,7 +59,7 @@ const CalendarWidget = ({ hasCalendarAccess, calConnected }) => {
         
         {days.map((day, index) => (
           <div key={index} className="day-column" style={styles.dayColumn}>
-            <div className="day-header" style={styles.dayHeader}>
+            <div className="dates" style={styles.dayHeader}>
               {day.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
             </div>
 
@@ -84,10 +85,10 @@ const CalendarWidget = ({ hasCalendarAccess, calConnected }) => {
                   <ul>
                     {matchingDay.events.map((event, i) => (
                       
-                      <li key={i}>
-                        <strong>{event.summary}</strong>
+                      <li key={i} className = "calendar-event">
+                        <strong className = "event-title">{event.summary}</strong>
                         {event.start?.dateTime && (
-                          <div style={{ fontSize: "0.8em", color: "#555" }}>
+                          <div className = "event-time">
                             {new Date(event.start.dateTime).toLocaleTimeString()}
                           </div>
                         )}
