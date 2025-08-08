@@ -1,9 +1,12 @@
 .calendar-event{
-    font-weight: bold;
-    font-size: 15px;
-    margin-bottom: 6px;
-    color: #FE7743;
-    font-family: 'Work Sans', sans-serif;
+    background-color: #273469;
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+
 }
 
 .event-title{
@@ -26,4 +29,22 @@
     margin-bottom: 6px;
     color: #FE7743;
     font-family: 'Work Sans', sans-serif;
+}
+
+.day-column{
+    background-color: #273469;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+    flex: 1;
+    margin-left: 10px;
+    border-left: 1px solid #FE7743;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    
 }

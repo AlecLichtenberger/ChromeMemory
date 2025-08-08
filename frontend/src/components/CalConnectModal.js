@@ -13,7 +13,7 @@ const CalendarModal = ({ isOpen, onClose, onConnect }) => {
         <h2 style = {styles.headerText}>Connect Your Google Calendar</h2>
         <p style = {styles.headerText}>We need access to show your calendar events here.</p>
         <BackendButton onClick={onConnect} >Connect Calendar</BackendButton>
-        <BackendButton onClick={onClose} className="close-btn" >Maybe Later</BackendButton>
+        
       </div>
     </div>
   );

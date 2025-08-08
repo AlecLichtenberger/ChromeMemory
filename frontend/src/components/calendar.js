@@ -113,18 +113,8 @@ const styles = {
     flexDirection: "row",
     width: "100%",
     height: "500px",
-    border: "1px solid #ccc",
   },
-  dayColumn: {
-    flex: 1,
-    borderLeft: "1px solid #ddd",
-    
-    display: "flex",
-    flexDirection: "column",
-    padding: "10px",
-    boxSizing: "border-box",
-    overflowY: "auto",
-  },
+  
   dayHeader: {
     fontWeight: "bold",
     marginBottom: "10px",
@@ -139,10 +129,7 @@ const styles = {
     padding: "5px",
     borderRadius: "4px",
     fontSize: "0.9em",
-  },
-  
-  
-  
+  }, 
 };
 
 export default CalendarWidget;
