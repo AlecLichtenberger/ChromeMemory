@@ -4,7 +4,7 @@ import CalendarWidget from "./calendar";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import { auth } from "../firebase";
-
+import './calendar.css';
 
 const Home = () => {
 
@@ -82,7 +82,10 @@ const Home = () => {
   return (
     
     <div>
-      <h1 style = {styles.headerText}>Welcome to Your Dashboard</h1>
+      <div class = "top-banner">
+        <h1>ChroMemory</h1>
+      </div>
+      <h1 style={styles.headerText}>Welcome to Your Dashboard</h1>
       <CalendarModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -102,7 +105,19 @@ const styles = {
   headerText: {
     color: "#FE7743",
     fontFamily: "'Work Sans', Sans-serif",
-  }
+    display: "flex",
+    placeItems: "center",
+  /* Optional: Add width and height for better control */
+    
+    height: "200px",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: "-50px",
+    
+  },
+
+  
+  
 }
 
 export default Home;

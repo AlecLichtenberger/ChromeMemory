@@ -45,6 +45,20 @@
     flex-direction: column;
     padding: 10px;
     box-sizing: border-box;
-    overflow-y: auto;
-    
+    overflow-y: auto;    
+}
+
+.top-banner {
+    background-color: #5E5768; /* Example background color */
+    color: white; /* Example text color */
+    padding: 2px ; /* Example padding for vertical spacing */
+    text-align: center; /* Center the text horizontally */
+    color: #D7D7D7;
+    font-family: 'Work Sans', sans-serif;
+    width: 100%; /* Make the banner span the full width */
+    /* Optional: Fixed positioning to keep it visible on scroll */
+    position: fixed; 
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Ensure it stays above other content */
 }
