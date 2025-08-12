@@ -10,8 +10,6 @@ const CalendarModal = ({ isOpen, onClose, onConnect }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2 style = {styles.headerText}>Connect Your Google Calendar</h2>
-        <p style = {styles.headerText}>We need access to show your calendar events here.</p>
         <BackendButton onClick={onConnect} >Connect Calendar</BackendButton>
         
       </div>

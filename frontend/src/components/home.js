@@ -86,15 +86,12 @@ const Home = () => {
         <h1>ChroMemory</h1>
       </div>
       <h1 style={styles.headerText}>Welcome to Your Dashboard</h1>
-      <CalendarModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onConnect={handleConnect}
-      />
+      
       <div className="w-full overflow-x-auto mt-4 px-4">
         <CalendarWidget 
           hasCalendarAccess={localStorage.getItem("hasCalendarAccess") === "true"}
           calConnected={isConnecting}
+          onConnect={handleConnect}
         />
       </div>
     </div>
@@ -106,13 +103,15 @@ const styles = {
     color: "#FE7743",
     fontFamily: "'Work Sans', Sans-serif",
     display: "flex",
-    placeItems: "center",
+    
   /* Optional: Add width and height for better control */
     
     height: "200px",
+    placeItems: "center",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: "-50px",
+    marginTop: "50px",
+    marginBottom: "-75px",
     
   },
 

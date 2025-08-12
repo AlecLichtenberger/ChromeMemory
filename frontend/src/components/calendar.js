@@ -1,112 +1,111 @@
-import React, {use, useEffect, useState} from "react";
+// calendar.js
+import React, { useEffect, useState } from "react";
 import BackendButton from "./BackendButton";
-import './calendar.css';
+import CalendarModal from "./CalConnectModal"; // <-- import modal
+import "./calendar.css";
 
-const CalendarWidget = ({ hasCalendarAccess, calConnected }) => {
+const CalendarWidget = ({ hasCalendarAccess, calConnected, onConnect }) => {
   const [eventsData, setEvents] = useState([]);
+  const [showModal, setShowModal] = useState(false); // <-- local modal state
+
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    return date;
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    return d;
   });
-  console.log("Days:", days);
+
   useEffect(() => {
-    if (calConnected) {
-        // Fetch events from the backend
-        fetchEvents();
-    }
-  },[calConnected]);
-  
- // This will hold the fetched events
+    if (calConnected) fetchEvents();
+  }, [calConnected]);
 
   const fetchEvents = async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
+    if (!token) return console.error("No token found");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/event-fetch", {
+      const resp = await fetch("http://localhost:5000/api/auth/event-fetch", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch events");
-      }
-
-      const data = await response.json();
-      const eventsData = data.events || [];
-      console.log("Events data:", eventsData);
-      setEvents(eventsData);
-      // Process and display events as needed
-    } catch (error) {
-      console.error("Error fetching events:", error);
+      if (!resp.ok) throw new Error("Failed to fetch events");
+      const data = await resp.json();
+      setEvents(data.events || []);
+    } catch (err) {
+      console.error("Error fetching events:", err);
     }
-  }
+  };
+
   return (
     <div className="calendar">
-      
-      <BackendButton onClick={fetchEvents}>Load Events</BackendButton>
-      
-      <div className="calendar-container" style ={styles.calendarContainer}>
-        
-        {days.map((day, index) => (
-          <div key={index} className="day-column" style={styles.dayColumn}>
-            <div className="dates" style={styles.dayHeader}>
-              {day.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+      {/* Button row */}
+      <div style={{
+        display: "flex",
+        justifyContent: "center", 
+        gap: "20px",              
+        margin: "20px 0",}}>
+        <BackendButton onClick={fetchEvents}>Load Events</BackendButton>
+        <BackendButton onClick={() => setShowModal(true)}>Connect Calendar</BackendButton>
+      </div>
+
+      {/* Modal now lives here */}
+      <CalendarModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConnect={() => {
+          setShowModal(false);
+          onConnect?.(); // call parent handler if provided
+        }}
+      />
+
+      <div className="calendar-container" style={styles.calendarContainer}>
+        {days.map((day, index) => {
+          const matchingDay = eventsData.find(entry => {
+            const ev = new Date(entry.date);
+            return (
+              ev.getFullYear() === day.getFullYear() &&
+              ev.getMonth() === day.getMonth() &&
+              ev.getDate() === day.getDate()
+            );
+          });
+
+          return (
+            <div key={index} className="day-column" style={styles.dayColumn}>
+              <div className="dates" style={styles.dayHeader}>
+                {day.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </div>
+
+              {matchingDay && matchingDay.events.length > 0 ? (
+                <ul>
+                  {matchingDay.events.map((event, i) => (
+                    <li key={i} className="calendar-event">
+                      <strong className="event-title">{event.summary}</strong>
+                      {event.start?.dateTime && (
+                        <div className="event-time">
+                          {new Date(event.start.dateTime).toLocaleTimeString()}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ fontSize: "0.9em", color: "#FE7743" }}>No events</p>
+              )}
             </div>
-
-              {(() => {
-                const matchingDay = eventsData.find(eventEntry => {
-                  const eventDate = new Date(eventEntry.date);
-
-                  const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-                  const targetDay = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-                  // console.log(
-                  //   "Comparing calendar day:",
-                  //   new Date(day).toISOString(),
-                  //   "with event day:",
-                  //   new Date(eventEntry.date).toISOString()
-                  // );
-                  if(eventDate.getDate() === day.getDate()){
-                    console.log(eventDate, eventEntry.events);
-                  }
-                  return eventDate.getDate() === day.getDate();
-                });
-
-                return matchingDay && matchingDay.events.length > 0 ? (
-                  <ul>
-                    {matchingDay.events.map((event, i) => (
-                      
-                      <li key={i} className = "calendar-event">
-                        <strong className = "event-title">{event.summary}</strong>
-                        {event.start?.dateTime && (
-                          <div className = "event-time">
-                            {new Date(event.start.dateTime).toLocaleTimeString()}
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p style={{ fontSize: "0.9em", color: "#FE7743", }}>No events</p>
-                );
-              })()}
-
-          </div>
-        ))}
-
+          );
+        })}
       </div>
     </div>
   );
 };
+
 const styles = {
   calendarContainer: {
     display: "flex",
@@ -114,22 +113,21 @@ const styles = {
     width: "100%",
     height: "500px",
   },
-  
+  dayColumn: {
+    flex: 1,
+    borderLeft: "1px solid #FE7743",
+    display: "flex",
+    flexDirection: "column",
+    padding: "10px",
+    boxSizing: "border-box",
+    overflowY: "auto",
+  },
   dayHeader: {
     fontWeight: "bold",
     marginBottom: "10px",
     textAlign: "center",
   },
-  events: {
-    flexGrow: 1,
-  },
-  event: {
-    backgroundColor: "#f0f0f0",
-    margin: "5px 0",
-    padding: "5px",
-    borderRadius: "4px",
-    fontSize: "0.9em",
-  }, 
 };
 
 export default CalendarWidget;
+

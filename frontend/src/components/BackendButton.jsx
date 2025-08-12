@@ -21,6 +21,9 @@ export default function BackendButton({
         marginLeft: "10px",
         marginRight: "10px",
         fontFamily: "'Work Sans', sans-serif",
+        placeItems: "center",
+        justifyContent: "center",
+        alignItems: "center",
     }
 
     return(
