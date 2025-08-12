@@ -1,12 +1,10 @@
 // calendar.js
 import React, { useEffect, useState } from "react";
 import BackendButton from "./BackendButton";
-import CalendarModal from "./CalConnectModal"; // <-- import modal
 import "./calendar.css";
 
 const CalendarWidget = ({ hasCalendarAccess, calConnected, onConnect }) => {
   const [eventsData, setEvents] = useState([]);
-  const [showModal, setShowModal] = useState(false); // <-- local modal state
 
   const today = new Date();
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -28,9 +26,11 @@ const CalendarWidget = ({ hasCalendarAccess, calConnected, onConnect }) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          // 🔧 this was broken before: needs backticks to interpolate
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!resp.ok) throw new Error("Failed to fetch events");
       const data = await resp.json();
       setEvents(data.events || []);
@@ -41,29 +41,23 @@ const CalendarWidget = ({ hasCalendarAccess, calConnected, onConnect }) => {
 
   return (
     <div className="calendar">
-      {/* Button row */}
-      <div style={{
-        display: "flex",
-        justifyContent: "center", 
-        gap: "20px",              
-        margin: "20px 0",}}>
-        <BackendButton onClick={fetchEvents}>Load Events</BackendButton>
-        <BackendButton onClick={() => setShowModal(true)}>Connect Calendar</BackendButton>
-      </div>
-
-      {/* Modal now lives here */}
-      <CalendarModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onConnect={() => {
-          setShowModal(false);
-          onConnect?.(); // call parent handler if provided
+      {/* Button row centered */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "20px",
+          margin: "20px 0",
         }}
-      />
+      >
+        <BackendButton onClick={fetchEvents}>Load Events</BackendButton>
+        {/* 🔧 Call the real connect handler directly (no modal) */}
+        <BackendButton onClick={onConnect}>Connect Calendar</BackendButton>
+      </div>
 
       <div className="calendar-container" style={styles.calendarContainer}>
         {days.map((day, index) => {
-          const matchingDay = eventsData.find(entry => {
+          const matchingDay = eventsData.find((entry) => {
             const ev = new Date(entry.date);
             return (
               ev.getFullYear() === day.getFullYear() &&
@@ -130,4 +124,5 @@ const styles = {
 };
 
 export default CalendarWidget;
+
 

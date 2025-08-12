@@ -82,18 +82,16 @@ const Home = () => {
   return (
     
     <div>
-      <div class = "top-banner">
+      <div className="top-banner">
         <h1>ChroMemory</h1>
       </div>
       <h1 style={styles.headerText}>Welcome to Your Dashboard</h1>
-      
-      <div className="w-full overflow-x-auto mt-4 px-4">
-        <CalendarWidget 
+
+      <CalendarWidget
           hasCalendarAccess={localStorage.getItem("hasCalendarAccess") === "true"}
           calConnected={isConnecting}
           onConnect={handleConnect}
-        />
-      </div>
+      />
     </div>
   );
 };
