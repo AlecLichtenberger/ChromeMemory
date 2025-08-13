@@ -95,7 +95,7 @@ const AuthForm = () => {
 
     <div style={styles.container}>
 
-      <h2>{isSignup ? "Sign Up" : "Login"}</h2>
+      <h2 style = {styles.signInText}>{isSignup ? "Sign Up" : "Login"}</h2>
       <form onSubmit={handleEmailAuth} style={styles.form}>
         <input
           type="email"
@@ -118,7 +118,7 @@ const AuthForm = () => {
         </button>
       </form>
 
-      <p>
+      <p style = {styles.text}>
         {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
         <button
           onClick={() => setIsSignup(!isSignup)}
@@ -150,7 +150,7 @@ const styles = {
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "1rem",
+    gap: "2rem",
     marginBottom: "1rem",
   },
   input: {
@@ -158,6 +158,7 @@ const styles = {
     fontSize: "1rem",
     borderRadius: "4px",
     border: "1px solid #aaa",
+    color:"#FE7743",
   },
   button: {
     padding: "0.75rem",
@@ -167,6 +168,7 @@ const styles = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
+    
   },
   googleButton: {
     padding: "0.75rem",
@@ -177,6 +179,7 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
     width: "100%",
+    
   },
   toggle: {
     background: "none",
@@ -186,6 +189,17 @@ const styles = {
     textDecoration: "underline",
     fontSize: "1rem",
   },
+  signInText: {
+    color:"#FE7743",
+    fontFamily: "'Work Sans', Sans-serif",
+    
+  },
+  text:{
+    color:"#FE7743",
+    fontFamily: "'Work Sans', Sans-serif",
+  }
+
+
 };
 
 export default AuthForm;
