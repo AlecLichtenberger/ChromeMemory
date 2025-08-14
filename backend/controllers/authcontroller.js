@@ -6,7 +6,9 @@ import { google } from "googleapis";
 
 dotenv.config();
 
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || "http://localhost:5000/api/auth/calendar-store-token";
+const REDIRECT_URI =
+  process.env.GOOGLE_REDIRECT_URI ||
+  "http://localhost:5000/api/auth/calendar-store-token";
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
@@ -24,7 +26,17 @@ function toRFC3339WithOffset(date) {
   const abs = Math.abs(offset);
   const hh = pad(Math.floor(abs / 60));
   const mm = pad(abs % 60);
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T00:00:00${sign}${hh}:${mm}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+    d.getDate()
+  )}T00:00:00${sign}${hh}:${mm}`;
+}
+
+// local YYYY-MM-DD (prevents timezone drift when serialized)
+function fmtYMDLocal(dt) {
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth() + 1).padStart(2, "0");
+  const d = String(dt.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 // ---------- auth flows ----------
@@ -51,11 +63,17 @@ export const firebaseLogin = async (req, res) => {
     }
 
     await user.save();
-    const hasCalendarAccess = Boolean(user.calendarAccessToken || user.calendarRefreshToken);
-    res.status(200).json({ message: "logged in successfully", CalAccess: hasCalendarAccess });
+    const hasCalendarAccess = Boolean(
+      user.calendarAccessToken || user.calendarRefreshToken
+    );
+    res
+      .status(200)
+      .json({ message: "logged in successfully", CalAccess: hasCalendarAccess });
   } catch (error) {
     console.error("Firebase login error:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -73,8 +91,12 @@ export const emailLogin = async (req, res) => {
     }
     await user.save();
 
-    const hasCalendarAccess = Boolean(user.calendarAccessToken || user.calendarRefreshToken);
-    res.status(200).json({ message: "logged in successfully", CalAccess: hasCalendarAccess });
+    const hasCalendarAccess = Boolean(
+      user.calendarAccessToken || user.calendarRefreshToken
+    );
+    res
+      .status(200)
+      .json({ message: "logged in successfully", CalAccess: hasCalendarAccess });
   } catch (err) {
     console.error("Email login error:", err);
     res.status(500).json({ message: "Internal server error" });
@@ -91,7 +113,8 @@ export const storeCalToken = async (req, res) => {
     const uid = decoded.uid;
 
     const googleAccessToken = req.body.googleAccessToken;
-    if (!googleAccessToken) return res.status(400).json({ message: "googleAccessToken missing" });
+    if (!googleAccessToken)
+      return res.status(400).json({ message: "googleAccessToken missing" });
 
     await User.updateOne(
       { uid },
@@ -102,7 +125,9 @@ export const storeCalToken = async (req, res) => {
     res.status(200).json({ message: "Token stored successfully" });
   } catch (error) {
     console.error("Error storing calendar token:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -113,7 +138,7 @@ export const calConScreen = async (req, res) => {
     if (!userId) return res.status(400).send("Missing userId");
     const url = oauth2Client.generateAuthUrl({
       access_type: "offline", // needed for refresh_token
-      prompt: "consent",      // force prompt to ensure refresh_token on first grant
+      prompt: "consent", // ensure refresh_token on first grant
       scope: ["https://www.googleapis.com/auth/calendar.readonly"],
       state: userId,
     });
@@ -142,11 +167,7 @@ export const calStoreToken = async (req, res) => {
       update.calendarRefreshToken = tokens.refresh_token;
     }
 
-    const result = await User.findOneAndUpdate(
-      { uid: userId },
-      { $set: update },
-      { new: true, upsert: true }
-    );
+    await User.findOneAndUpdate({ uid: userId }, { $set: update }, { new: true, upsert: true });
 
     // return to the app and close popup
     res.send(`
@@ -172,7 +193,9 @@ export const getEvents = async (req, res) => {
 
     const user = await User.findOne({ uid });
     if (!user || !user.calendarRefreshToken) {
-      return res.status(404).json({ message: "User not found or calendar access not granted" });
+      return res
+        .status(404)
+        .json({ message: "User not found or calendar access not granted" });
     }
 
     // Build a new client with the stored refresh token
@@ -211,33 +234,40 @@ export const getEvents = async (req, res) => {
 
     const items = data.items || [];
     if (!items.length) {
-      return res.status(200).json({ message: "No events found for the next 7 days", events: [] });
+      return res.status(200).json({
+        message: "No events found for the next 7 days",
+        events: [],
+      });
     }
 
-    // Group events by day (preserves your original shape)
+    // Group by day (send date as local YYYY-MM-DD)
     const result = [];
     let d = new Date(day1);
+
     for (let i = 0; i < 7; i++) {
+      const dayYmd = fmtYMDLocal(d);
+
+      // Match by start day (simple approach).
+      // If you want to expand multi-day/all-day across all covered days,
+      // do it here by iterating from start..(end-1) and including each day.
       const dayEvents = items.filter((ev) => {
-        const dt = new Date(ev.start?.dateTime || ev.start?.date); // handles all-day, too
-        return (
-          dt.getFullYear() === d.getFullYear() &&
-          dt.getMonth() === d.getMonth() &&
-          dt.getDate() === d.getDate()
-        );
+        const startRaw = ev.start?.dateTime || ev.start?.date;
+        if (!startRaw) return false;
+        const start = new Date(startRaw);
+        return fmtYMDLocal(start) === dayYmd;
       });
 
       result.push({
-        date: new Date(d),
+        date: dayYmd, // <<<<<<<<<<<<<<<<<<<<<< key change (string, not Date)
         events: dayEvents.map((ev) => {
-          const start = ev.start?.dateTime || ev.start?.date;
-          const end = ev.end?.dateTime || ev.end?.date;
+          const start = ev.start?.dateTime || ev.start?.date || null;
+          const end = ev.end?.dateTime || ev.end?.date || null;
           return {
             id: ev.id,
             link: ev.htmlLink,
             summary: ev.summary,
-            start: start ? new Date(start) : null,
-            end: end ? new Date(end) : null,
+            start, // keep as string; parse on client if needed
+            end,   // keep as string
             timezone: ev.start?.timeZone || ev.end?.timeZone || null,
             allDay: Boolean(ev.start?.date && !ev.start?.dateTime),
           };
@@ -250,10 +280,14 @@ export const getEvents = async (req, res) => {
       d = nd;
     }
 
-    res.status(200).json({ message: "Events fetched successfully", events: result });
+    res
+      .status(200)
+      .json({ message: "Events fetched successfully", events: result });
   } catch (error) {
     console.error("Error fetching events:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
