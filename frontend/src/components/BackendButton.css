@@ -1,0 +1,16 @@
+/* BackendButton.css */
+.backend-button {
+  transition: transform 0.12s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* While mouse is down */
+.backend-button:active:not(:disabled) {
+  transform: scale(0.97);
+  background-color: #1e2954; /* slightly darker than #273469 */
+}
+
+/* Optional: disabled look */
+.backend-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

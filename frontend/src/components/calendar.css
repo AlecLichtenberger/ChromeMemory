@@ -1,11 +1,12 @@
 .calendar-event{
-    background-color: #273469;
-    color: #e0e0e0;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s ease;
+  border-left: 4px solid #FE7743;
+  background: rgba(254, 119, 67, 0.08);
+  padding-left: 8px;
+  border-radius: 4px;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  margin-bottom: 4px;
+  margin-top: 4px;
 
 }
 .calendar-event:hover {
@@ -19,6 +20,10 @@
   background: rgba(254, 119, 67, 0.08);
   padding-left: 8px;
   border-radius: 4px;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  margin-bottom: 4px;
+  margin-top: 4px;
 }
 
 .event-title{
@@ -50,10 +55,11 @@
     padding: 10px;
     margin-bottom: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-left: 1px solid #FE7743;
     transition: transform 0.2s ease;
     flex: 1;
     margin-left: 10px;
-    border-left: 1px solid #FE7743;
+    
     display: flex;
     flex-direction: column;
     padding: 10px;
