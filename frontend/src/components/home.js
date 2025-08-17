@@ -49,7 +49,7 @@ const Home = () => {
 
       if (!response.ok) throw new Error("Failed to store calendar token");
 
-      alert("Calendar connected!");
+      
       localStorage.setItem("hasCalendarAccess", "true");
     } catch (error) {
       console.log("Error connecting to Google Calendar:", error);
