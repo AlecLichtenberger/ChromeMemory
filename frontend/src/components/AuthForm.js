@@ -94,8 +94,9 @@ const AuthForm = () => {
   return (
 
     <div style={styles.container}>
-
+      <h1 style = {styles.signInText}> ChroMemory</h1>
       <h2 style = {styles.signInText}>{isSignup ? "Sign Up" : "Login"}</h2>
+      
       <form onSubmit={handleEmailAuth} style={styles.form}>
         <input
           type="email"
@@ -142,10 +143,14 @@ const styles = {
     maxWidth: "400px",
     margin: "50px auto",
     padding: "2rem",
-    border: "1px solid #ccc",
+    border: "1px solid rgba(0, 0, 0, 0.15)",
     borderRadius: "8px",
     textAlign: "center",
     fontFamily: "sans-serif",
+    
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+    borderLeft: "5px solid #FE7743",
+    borderBottom: "5px solid #FE7743"
   },
   form: {
     display: "flex",

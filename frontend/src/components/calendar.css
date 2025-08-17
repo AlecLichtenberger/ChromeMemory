@@ -51,11 +51,12 @@
 
 .day-column{
     background-color: #273469;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-left: 1px solid #FE7743;
     border-radius: 8px;
     padding: 10px;
     margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    border-left: 1px solid #FE7743;
+    
     transition: transform 0.2s ease;
     flex: 1;
     margin-left: 10px;
